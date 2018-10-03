@@ -1,0 +1,52 @@
+<div class="gro-center gro-button_pad">
+<div>
+    <input type="text" style="width: 140px; display: inline-block;" [(ngModel)]="itemVal" class="form-control" id="item" placeholder="Item">
+    <input type="text" style="width: 60px; display: inline-block;" [(ngModel)]="unitVal" class="form-control" (keyup.enter)="addGrocery(itemVal, unitVal)" id="qty" placeholder="Unit">
+</div>
+<button type="button" id="btn-add" (click)="addGrocery(itemVal, unitVal)" class="btn btn-light">Add Grocery</button> 
+<hr>
+
+<div><label>Displaying</label></div>
+<div class="btn-group btn-group-toggle" data-toggle="buttons">
+    <label class="btn btn-light" [ngClass]="{'active': all}">
+      <input type="radio" name="options" (click) = "displayOption('all')" id="option1" autocomplete="off"> All
+    </label>
+    <label class="btn btn-light" [ngClass]="{'active': check}">
+      <input type="radio" name="options" id="option2" (click) = "displayOption('check')" autocomplete="off"> Checked Out
+    </label>
+    <label class="btn btn-light" [ngClass]="{'active': rem}">
+      <input type="radio" name="options" id="option3" (click) = "displayOption('rem')" autocomplete="off"> Remaining
+    </label>
+  </div>
+  <hr>
+<div>
+<button type="button" id="btn-drop" (click)="dropGrocery()" class="btn btn-light">Drop All Groceries</button> 
+</div>
+<hr>
+
+</div>
+<div class="gro-container_outer gro-center">
+  <div class="gro-container_inner">
+    <div class="gro-container_confined">
+      <ng-container *ngFor="let item of groceries; let i = index;">
+      <div class="gro-container" id="itemCard{{i}}"
+      [@cardAnimator]="animationState"
+      (@cardAnimator.done)="resetAnimation()">
+        <p class="gro-wrap_text gro-title_text">{{item?.item}}</p>
+        <fa *ngIf="!item?.status" name="far fa-times-circle" id="fa-times-circle"></fa>
+        <fa *ngIf="item?.status" name="far fa-check" id="fa-check"></fa>
+        <p *ngIf="item?.qty" class="gro-item_qty">Quantity</p>
+        <p class="gro-item_qty_value">{{item?.qty}}</p>
+        <p class="gro-item_status">
+        <input type="checkbox" class="form-check-input" [checked]="item?.status" 
+          (change) ="updateGroceryStatus($event.target.checked, i)" id="CheckStatus{{i}}">
+        <label class="form-check-label" for="CheckStatus{{i}}">Check out</label>
+      </p>
+        <p></p>
+      </div>
+    </ng-container>
+    </div>
+    
+  </div>
+</div>
+<div id="scrollView"></div>
