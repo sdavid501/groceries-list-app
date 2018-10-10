@@ -25,15 +25,20 @@
 <hr>
 
 </div>
+
 <div class="gro-container_outer gro-center">
   <div class="gro-container_inner">
-    <div class="gro-container_confined">
-      <ng-container *ngFor="let item of groceries; let i = index;">
+    <div class="gro-container_confined"
+    [@cardAni]="deleteAni?'bounceOutLeft':''"
+    (@cardAni.done)="resetDeleteAni()">
+      <ng-container *ngFor="let item of groceries; let i = index; let last=last">
       <div class="gro-container" id="itemCard{{i}}"
-      [@cardAnimator]="animationState"
+      [@cardAni]="index==i?aniState:''"
+      [@cardAniRem]="remIndex==i?aniStateRem:''"
+      [@cardAnimator]="last?animationState:''"
       (@cardAnimator.done)="resetAnimation()">
         <p class="gro-wrap_text gro-title_text">{{item?.item}}</p>
-        <fa *ngIf="!item?.status" name="far fa-times-circle" id="fa-times-circle"></fa>
+        <fa *ngIf="!item?.status" style="cursor:pointer;" (click)="removeItem(i)" name="far fa-times-circle" id="fa-times-circle"></fa>
         <fa *ngIf="item?.status" name="far fa-check" id="fa-check"></fa>
         <p *ngIf="item?.qty" class="gro-item_qty">Quantity</p>
         <p class="gro-item_qty_value">{{item?.qty}}</p>

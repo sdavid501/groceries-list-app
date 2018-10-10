@@ -11,15 +11,31 @@ declare var $: any;
   animations: [
     trigger('cardAnimator',[
       transition('* => swing', animate(1000, keyframes(kf.swing))),
-      transition('* => flipIn', animate(1000, keyframes(kf.flipIn)))
+      transition('* => flipIn', animate(1000, keyframes(kf.bounceInRight)))
+    ]),
+    trigger('cardAni',[
+      transition('* => swing', animate(1000, keyframes(kf.swing))),
+      transition('* => flipIn', animate(1000, keyframes(kf.flipIn))),
+      transition('* => bounceOutLeft', animate(300, keyframes(kf.bounceOutLeft))),
+      transition('* => bounceOutDown', animate(300, keyframes(kf.bounceOutDown)))
+    ]),
+    trigger('cardAniRem',[
+      transition('* => bounceOutDown', animate(500, keyframes(kf.bounceOutDown)))
     ])
   ]
 })
+
 export class HomeComponent implements OnInit {
 
   animationState: string;
+  aniState: string;
   itemVal: any;
   unitVal: any;
+  index: any;
+  addVar:any;
+  deleteAni: boolean;
+  remIndex: any;
+  aniStateRem: any;
   startAnimation(state){
     console.log(state);
     if(!this.animationState){
@@ -27,8 +43,15 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  resetDeleteAni(){
+    this.deleteAni = false;
+  }
+
   resetAnimation() {
     this.animationState = '';
+    this.aniState ='';
+    this.index = -1;
+    this.addVar = false;
   }
 
   groceries: Grocery[] = new Array<Grocery>();
@@ -47,6 +70,7 @@ export class HomeComponent implements OnInit {
   
   addGrocery(i: any, q: any){
     this.animationState= "flipIn";
+    this.addVar = true;
     this.groService.addGrocery({item: i, qty: q, status: false});
     this.updateGroceries();
     this.itemVal ="";
@@ -55,12 +79,17 @@ export class HomeComponent implements OnInit {
   }
 
   dropGrocery(){
+    this.deleteAni= true
+    setTimeout(()=>{
     this.groService.dropGrocery();
     this.updateGroceries();
+    }, 200);
   }
 
   updateGroceryStatus(checked: any, index: any){
-    this.startAnimation('swing');
+    // this.startAnimation('swing');
+    this.index=index;
+    this.aniState = "swing";
     var data = this.groceries[index];
     data.status = checked;
     this.groService.updateGrocery(data, index);
@@ -99,8 +128,19 @@ export class HomeComponent implements OnInit {
   toggleCotainer(){
     alert("sssss");
   }
-  displayOption(i: any) {
+
+  removeItem(i: any) {
+    this.remIndex=i;
+    this.aniStateRem = 'bounceOutDown';
+    this.groService.removeGrocery(i);
+    setTimeout(()=>{
     this.groceries = Object.assign([],this.groService.getGroceries());
+    }, 450);
+  }
+  displayOption(i: any) {
+    this.deleteAni= true;
+    setTimeout(()=>{
+      this.groceries = Object.assign([],this.groService.getGroceries());
     if(i=="all"){
      this.all=true; this.check = false; this.rem =false;
      return;
@@ -123,6 +163,8 @@ export class HomeComponent implements OnInit {
      });
     }
      this.groceries = Object.assign([],gro);
+    }, 200);
+    
   }
 
   
